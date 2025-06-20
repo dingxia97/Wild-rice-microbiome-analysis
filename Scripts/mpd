@@ -1,1 +1,57 @@
+######## R ################
+#load packages
+library("knitr")
+library(checkpoint)
+library("rmarkdown")
+library("formatR")
+library("ggplot2")
+library("phyloseq")
+# Checkpoint can't install phyloseq, so install like this:
+#source('http://bioconductor.org/biocLite.R'); biocLite('phyloseq',suppressUpdates = T)
+library("RColorBrewer")
+library("viridis")
+library("scales")
+library("cowplot")
+library("vegan")
+library("dplyr")
+library("multcomp")
+library("reshape2")
+library("picante")
+#library("betapart")
+#library("parallel")
+library("tidyr")
+library("broom")
+library(ape)
 
+#load data
+design = read.table("design.txt", header=T, row.names= 1, sep="\t") 
+commt = read.table("feature-norm.txt", header=T, row.names= 1,sep="\t")
+phy_tree <- read.tree("tree.nwk")
+phy_tree
+
+phy<-prune.sample(comm, phy_tree)    
+phylodist <- as.dist(cophenetic.phylo(phy))
+pd.result <- pd(comm, phy, include.root = TRUE)
+phydist <- cophenetic(phy)
+
+ses.mpd.result <- ses.mpd(comm, phydist, null.model = "taxa.labels", abundance.weighted = FALSE, runs = 999)
+mpd <- ses.mpd.result
+
+#plot
+compare_means(mpd ~ divergence_time, data = dat) 
+my_comparisons <- list(c("early", "medium"),c("early", "late"),c("medium", "late"))
+ggplot(dat,aes(x = factor(divergence_time,levels=c("early","medium","late")), y=mpd))+
+  geom_violin(aes(fill=divergence_time),cex=1.2)+  
+  scale_fill_manual(values = c('#579ABB','#B978AE','gray70'))+
+  geom_boxplot(width=0.1,cex=1.2)+
+  theme_classic(base_size = 20)+
+  theme(axis.text = element_text(color = 'black'),
+        legend.position = 'none')+
+stat_compare_means(comparisons = my_comparisons)  +
+  geom_hline(yintercept = c(-2, 2), color = "black", alpha = 1, linetype="dashed", size=0.5)+
+  ylab("MPD") + 
+   scale_y_continuous(breaks=seq(-6, 6, 2),limits = c(-6,6))
+
+
+
+##### end #####
