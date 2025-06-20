@@ -1,1 +1,47 @@
+#### Random Forest Machine Learning #######
+#conda_path=/anaconda3/
+#Source activate rbase4.1
 
+######## R ################
+
+#load randomForest packages
+library(randomForest)
+library(caret)
+library(pROC)
+library(Metrics)
+
+#load data
+bac_otu <- read.table('otutab_norm_0.005%_bac.txt', sep = '\t', row.names = 1, header = TRUE, fill = TRUE)
+bac_otu <- data.frame(bac_otu)
+group <- read.table('group.txt', sep = '\t', row.names = 1, header = TRUE, fill = TRUE)
+bac_otu_group <- cbind(bac_otu, group)
+bac_otu_group <- na.omit(bac_otu_group)
+bac_otu_group$groups <- as.numeric(bac_otu_group$groups)
+head(bac_otu_group)
+
+#train subset(70%) and test subset(30%)
+set.seed(123)
+select_train <- sample(nrow(bac_otu_group), nrow(bac_otu_group)*0.7)
+bac_otu_train <- bac_otu_group[select_train, ]
+bac_otu_test <- bac_otu_group[-select_train, ]
+
+#Create the rf_Model
+set.seed(123)
+bac_otu_train.forest <- randomForest(groups ~ ., data = bac_otu_train, importance = TRUE, confusion=T,  na.action = na.omit)
+bac_otu_train.forest
+
+#Prediction and Assessment
+bac_otu_predict <- predict(bac_otu_train.forest, bac_otu_test)
+bac_otu_predict
+bac_otu_predict <- data.frame(bac_otu_predict)
+
+
+bac_otu_predict$bac_otu_predict <- as.numeric (bac_otu_predict$bac_otu_predict)
+bac_otu_roc <- roc(bac_otu_test$groups, bac_otu_predict$bac_otu_predict)
+
+#calculate MAE value
+bac_otu_mae <- mae(bac_otu_test$groups, bac_otu_predict$bac_otu_predict)
+bac_otu_mae
+
+
+##### end #####
