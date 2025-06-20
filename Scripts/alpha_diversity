@@ -1,1 +1,51 @@
+#load packages
+library(readr)
+library("ggplot2")
+library("vegan")
+library("gplots")
+library(RColorBrewer)
+library(RVAideMemoire)
+library(pairwiseAdonis)
+library(ggpubr)
+library(cowplot) 
+library(tidyverse)
+library(rstatix)   
+library(ggpubr)
+library("ggplot2")
+library("vegan")
+library("gplots")
+library(RColorBrewer)
+library(RVAideMemoire)
+library(pairwiseAdonis)
+library(ggpubr)
+library(cowplot) 
+library("ggsci") 
+library("ggplot2") 
+library("gridExtra")
+library(patchwork)   
+library(cowplot) 
+
+#load data
+#frome qiime2 output files
+design <- read.table('design.txt', row.names = 1, head=T,sep = '\t')
+shannon <- read_tsv("Shannon.tsv")       
+rownames(shannon) <- shannon$id
+faith_pd <- read_tsv("faith_pd.tsv")
+rownames(faith_pd) <- faith_pd$id
+
+
+alpha <- cbind(shannon, faith_pd,sub_design)
+alpha
+
+#plot
+compare_means(shannon ~ site, data = alpha2, method="kruskal.test") 
+my_comparisons <- list(c("Leaf","Shoot"), c("Leaf", "Root"),c("Shoot", "Root"))
+ggboxplot(alpha2, x = "site", y = "shannon",  fill = "site", notch=TRUE, order = c("Root", "Shoot", "Leaf")) +
+scale_fill_brewer(palette = "Pastel2") +
+labs(x=" ", y="shannon") +
+          stat_compare_means(comparisons = my_comparisons)        
+ggboxplot(alpha3, x = "site", y = "faith_pd",  fill = "site", notch=TRUE, order = c("Root", "Shoot", "Leaf")) +
+scale_fill_brewer(palette = "Pastel2") +
+labs(x=" ", y="faith_pd") +
+          stat_compare_means(comparisons = my_comparisons)
 
