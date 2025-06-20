@@ -1,1 +1,29 @@
 
+######## python ################
+import numpy as np
+from numpy import random
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set()
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from pandas import Series,DataFrame
+import seaborn as sns
+import palettable
+
+
+b= pd.read_csv('eggnog_kotab_N_norm.csv', index_col=0)  
+b.head()
+
+#plot
+fig = plt.figure()
+f, ax = plt.subplots(figsize=(12, 4))
+sns_plot = sns.heatmap(b,cmap="YlGnBu", linewidth=0.5)
+plt.savefig("eggnog_kotab_N_heatmap2_norm_MAG.pdf", bbox_inches='tight') # 减少边缘空白
+plt.show()
+
+
+
+##### end #####
