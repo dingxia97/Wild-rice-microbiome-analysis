@@ -1,1 +1,43 @@
+#!/bin/bash
+
+#### Phylosymbiosis #######
+#conda_path=/anaconda3/
+#source activate python27
+
+################################################################################
+##### GENERATE RANDOM TREES #####
+# This section will generate 100,000 random trees with same topology and leaf labels
+# as host phylogenies.
+
+### rice #################################################################
+folderIn=rice
+./tree_random.py -o $folderIn"/random_trees" -n 100000 -i O.australiensis,O.brachyantha,O.eichingeri,O.latifolia,O.longistaminata,O.malampuzhaensis,O.minuta,O.nivara,O.officinalis,O.punctata,O.rhizomatis,O.rufipogon,O.sativa_indica
+
+for i in $folderIn"/random_trees/"*
+do
+    echo $i
+    cat $i >> $folderIn"/random_trees.newick"
+done
+rm -rf $folderIn"/random_trees/"
+
+
+################################################################################
+##### CALCULATE SCORES #####
+# Input the host and microbiome trees and calculate scores, do the same for STOCHASTIC 
+folderIn=rice
+
+### SELECT ONE OF THESE METRICS ###
+methodIn="rf"
+methodIn="mc"
+
+refIn="$folderIn"/newick/ht.newick; compareIn="$folderIn"/newick/mt.newick; outIn="$folderIn"/treecmp_"$methodIn".txt;
+java -jar TreeCmp/bin/TreeCmp.jar -r $refIn -d $methodIn -i $compareIn -o $outIn -N &
+compareIn="$folderIn"/random_trees.newick; outIn="$folderIn"/treecmp_"$methodIn"_stochastic.txt;
+java -jar TreeCmp/bin/TreeCmp.jar -r $refIn -d $methodIn -i $compareIn -o $outIn -N &
+
+
+################################################################################
+##### end #####
+
+
 
